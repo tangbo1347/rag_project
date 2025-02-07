@@ -3,12 +3,14 @@ from langchain.chains import RetrievalQA
 
 
 from lib.eli import CustomEmbeddings, CustomLLM
+from lib.deepseek import DeepSeekLLM
 
 from lib.config import config_get_item
 
 embedding_model = CustomEmbeddings()
 
-custom_llm = CustomLLM(api_generate_url=config_get_item("eli", "eli_generate"), api_key=config_get_item("eli", "eli_api_key"))
+#custom_llm = CustomLLM(api_generate_url=config_get_item("eli", "eli_generate"), api_key=config_get_item("eli", "eli_api_key"))
+custom_llm_deep = DeepSeekLLM(api_generate_url=config_get_item("deepseek", "base_url"), deepseek_api_key=config_get_item("deepseek", "deepseek_api_key"))
 
 
 documents1 = [
@@ -28,7 +30,7 @@ db = FAISS.load_local(
         "faiss_index", embedding_model, allow_dangerous_deserialization=True
     )
 
-qa_chain = RetrievalQA.from_chain_type(llm=custom_llm, retriever=db.as_retriever())
+qa_chain = RetrievalQA.from_chain_type(llm=custom_llm_deep, retriever=db.as_retriever())
 
 query = "唐博跟赵铜锌是什么关系？"
 result = qa_chain.run(query)
