@@ -1,2 +1,5 @@
 venv/
 faiss_index/
+all-MiniLM-L6-v2/
+lib/__pycache__/*
+data/

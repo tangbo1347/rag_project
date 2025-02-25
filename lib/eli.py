@@ -52,14 +52,14 @@ class CustomEmbeddings(Embeddings):
         """
         文档的 embedding
         """
-        print("eembed_documents was called")
+        print("eli embed_documents was called")
         return self._embed(texts, endpoint="api/v1/bi_encoder/encode")
 
     def embed_query(self, text: str) -> list[float]:
         """
         查询的 embedding
         """
-        print("embed_query was called")
+        print("eli embed_query was called")
         return self._embed([text], endpoint="api/v1/bi_encoder/encode")[0]
 
 
@@ -79,7 +79,7 @@ class CustomLLM(BaseLLM):
 
         payload = {
             "prompt":prompt,
-            "model":"Mistral-12b",
+            "model":"deepseekr1-14b",
             "max_new_tokens":256,
             "temperature":0,
             "max_suggestions":0,

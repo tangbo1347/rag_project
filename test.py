@@ -3,24 +3,32 @@ from langchain.chains import RetrievalQA
 
 
 from lib.eli import CustomEmbeddings, CustomLLM
-from lib.deepseek import DeepSeekLLM
+from lib.embedding import TransformersEmbeddings
+from lib.deepseek import DeepSeekLLM, DeepSeekLLM_Agent
 
 from lib.config import config_get_item
 
-embedding_model = CustomEmbeddings()
+embedding_model = TransformersEmbeddings()
 
-#custom_llm = CustomLLM(api_generate_url=config_get_item("eli", "eli_generate"), api_key=config_get_item("eli", "eli_api_key"))
+custom_llm = CustomLLM(api_generate_url=config_get_item("eli", "eli_generate"), api_key=config_get_item("eli", "eli_api_key"))
 custom_llm_deep = DeepSeekLLM(api_generate_url=config_get_item("deepseek", "base_url"), deepseek_api_key=config_get_item("deepseek", "deepseek_api_key"))
 
 
 documents1 = [
-    "丹尼尔跟唐博是同事",
-    "丹尼尔跟赵铜锌是同事",
-    "丹尼尔每天居家办公",
-    "赵铜锌擅长SAPC的产品",
-    "丹尼尔不会SAPC",
-    "唐博不会SAPC"
+    "2024年1月1日，芯片板块上涨，白酒板块回调",
+    "2024年1月2日铜线缆板块上涨",
+    "2024年1月3日数据板块上涨",
+    "2024年1月4日光通信板块上涨",
+    "2024年1月5日芯片板块回调，白酒和猪肉板块上涨",
+    "2024年1月6日白酒板块上涨后，指数容易出现冲高回落"
 ]
+
+# import os
+# data_path = os.path.join(os.getcwd(), "data", "output_002304.csv")
+# with open(data_path, "r") as file:
+#     content = file.read()
+
+
 
 db = FAISS.from_texts(documents1, embedding_model)
 db.save_local("faiss_index")
@@ -32,14 +40,6 @@ db = FAISS.load_local(
 
 qa_chain = RetrievalQA.from_chain_type(llm=custom_llm_deep, retriever=db.as_retriever())
 
-query = "唐博跟赵铜锌是什么关系？"
-result = qa_chain.run(query)
-print("回答：", result)
-
-query = "赵铜锌可以去哪找丹尼尔？"
-result = qa_chain.run(query)
-print("回答：", result)
-
-query = "唐博有SAPC的问题，该向谁求助？"
-result = qa_chain.run(query)
+query = "如果日期代表板块轮动的先后关系，能否分析出板块之间的轮动关系"
+result = qa_chain.invoke(query)
 print("回答：", result)
